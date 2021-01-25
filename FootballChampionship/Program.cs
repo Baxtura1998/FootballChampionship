@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FootballChampionship
 {
@@ -12,7 +13,7 @@ namespace FootballChampionship
     {
         static void Main(string[] args)
         {
-            using (var db = new FootballChampionship())
+            using (var db = new FootballChampionship8())
             {
                 //--------------------------------Safexburto Gundebis Sheqmna Da Bazashi Chawera---------------------------------------
 
@@ -23,11 +24,11 @@ namespace FootballChampionship
                 Console.WriteLine("Shemoitanet Gundebis Saxelebi");
                 for (int i = 0; i < z; i++)
                 {
-                    db.FootballTeam.Add(new FootballTeam() { FootballTeamName = Console.ReadLine() }); //Shemogvaq Gundebis Saxelebi Da Vwert Bazashi, FootballTeam Cxrilshi!
+                    db.FootballTeams.Add(new FootballTeams() { FootballTeamName = Console.ReadLine() }); //Shemogvaq Gundebis Saxelebi Da Vwert Bazashi, FootballTeam Cxrilshi!
                 }
                 db.SaveChanges(); //Vamaxsovrebt Cvlilebebs!
                 Console.WriteLine("Gundebis Saxelebi Chaiwera Bazashi!");
-
+                
                 //---------------------------------Matchebis Sheqmna Da Shesabamisad Shedegebis Bazashi Chawera-------------------
 
                 Console.WriteLine("Shemoitanet Chatarebuli Matchebis Angarishebi");
@@ -35,13 +36,14 @@ namespace FootballChampionship
                 {
                     for (int j = i + 1; j < z; j++)
                     {
-                        Console.WriteLine("Shemoitanet Shemdegi Matchis Angarishi:" + db.FootballTeam.ToArray()[i].FootballTeamName +
-                            " - " + db.FootballTeam.ToArray()[j].FootballTeamName);
-                        db.ChampionshipFixtureResults.Add(new ChampionshipFixtureResults()
+                        Console.WriteLine("Shemoitanet Shemdegi Matchis Angarishi:" + db.FootballTeams.ToArray()[i].FootballTeamName +
+                            " - " + db.FootballTeams.ToArray()[j].FootballTeamName);
+                        db.Matches.Add(new Matches()
                         {
-                            FootballTeam1 = db.FootballTeam.ToArray()[i].FootballTeamName,
+
+                            FirstTeam = db.FootballTeams.ToArray()[i],
                             GoalsScoredByFirstTeam = Convert.ToInt32(Console.ReadLine()),
-                            FootballTeam2 = db.FootballTeam.ToArray()[j].FootballTeamName,
+                            SecondTeam = db.FootballTeams.ToArray()[j],
                             GoalsScoredBySecondTeam = Convert.ToInt32(Console.ReadLine())
                         });
                         //Angarishebs Vwert Bazashi, ChampionshipFixtureResults Cxrilshi
@@ -51,35 +53,35 @@ namespace FootballChampionship
                 Console.WriteLine("Shexvedrebis Angarishebi Chaiwera Bazashi!");
 
                 //---------------------------------------------Gundebis Mier Dagrovili Qulebis Gamotvla------------------
-
-                int q = db.ChampionshipFixtureResults.ToArray().Length;
+                
+                int q = db.Matches.ToArray().Length;
                 int dict;// Shemogvaq Es Integeri, Qvemot Moyvanili ChampRank-is Damxmared          
-                Championship[] ChampRank = new Championship[z];//ChampRank-i Gvchirdeba Qulebisa,Gundebisa Da Adgilebis Championship Cxrilshi Sworad Chasawerad
+                Ranks[] ChampRank = new Ranks[z];//ChampRank-i Gvchirdeba Qulebisa,Gundebisa Da Adgilebis Ranks Cxrilshi Sworad Chasawerad
                 for (int i = 0; i < z; i++)//Am Kodit Xdeba Qulebis Gamotvla
                 {
                     dict = 0;
                     for (int j = 0; j < q; j++)
                     {
-                        if (db.ChampionshipFixtureResults.ToArray()[j].FootballTeam1 == db.FootballTeam.ToArray()[i].FootballTeamName)
+                        if (db.Matches.ToArray()[j].FirstTeam.FootballTeamName == db.FootballTeams.ToArray()[i].FootballTeamName)
                         {
-                            if (db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredByFirstTeam < db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredBySecondTeam)
+                            if (db.Matches.ToArray()[j].GoalsScoredByFirstTeam < db.Matches.ToArray()[j].GoalsScoredBySecondTeam)
                             {
                                 dict = dict - 1;
                             }
-                            if (db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredByFirstTeam > db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredBySecondTeam)
+                            if (db.Matches.ToArray()[j].GoalsScoredByFirstTeam > db.Matches.ToArray()[j].GoalsScoredBySecondTeam)
                                 dict += 3;
                         }
-                        else if (db.FootballTeam.ToArray()[i].FootballTeamName == db.ChampionshipFixtureResults.ToArray()[j].FootballTeam2)
+                        else if (db.FootballTeams.ToArray()[i].FootballTeamName == db.Matches.ToArray()[j].SecondTeam.FootballTeamName)
                         {
-                            if (db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredBySecondTeam < db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredByFirstTeam)
+                            if (db.Matches.ToArray()[j].GoalsScoredBySecondTeam < db.Matches.ToArray()[j].GoalsScoredByFirstTeam)
                             {
                                 dict -= 1;
                             }
-                            if (db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredBySecondTeam > db.ChampionshipFixtureResults.ToArray()[j].GoalsScoredByFirstTeam)
+                            if (db.Matches.ToArray()[j].GoalsScoredBySecondTeam > db.Matches.ToArray()[j].GoalsScoredByFirstTeam)
                                 dict += 3;
                         }
                     }
-                    ChampRank[i] = new Championship() { FootballTeamName = db.FootballTeam.ToArray()[i].FootballTeamName, ChampionshipPoints = dict }; //ChampRank-
+                    ChampRank[i] = new Ranks() { Team=db.FootballTeams.ToArray()[i],ChampionshipPoints = dict }; //ChampRank-is shevseba
                 }
 
                 //-------Dakavebuli Adgilebis Sworad Gansazgvra(Optimizacia) Shesabamisi Qulebisa Da Pirobis Mixedvit-------                
@@ -100,62 +102,61 @@ namespace FootballChampionship
                         arr.Add(c);
                     }
                 }
-                List<Championship> Championships = new List<Championship>();//Shemogvaq Kidev Erti Damxmare Listi
+                List<Ranks> Championships = new List<Ranks>();//Shemogvaq Kidev Erti Damxmare Listi
                 for (int i = 0; i < arr.Count; i++)//Am Moqmedebis Mizani Aris Championships Listshi Monacemebis Qulebis 
                                                    //Klebadobis Mixedvis Chawera, Oghond Ise, Rom Tu Ramdenime Gunds Eqneba Ertnairi Qula, Programa Adgilebs
                                                    //Gansazgvravs Anbanis Mixedvit!
                 {
-                    Championship[] MyChampionship = ChampRank.Where(x => x.ChampionshipPoints == arr[i]).OrderBy(s => s.FootballTeamName).ToArray();
+                    Ranks[] MyChampionship = ChampRank.Where(x => x.ChampionshipPoints == arr[i]).OrderBy(s => s.Team.FootballTeamName).ToArray();
                     for (int j = 0; j < MyChampionship.Length; j++)
+                    {
                         Championships.Add(MyChampionship[j]);
+                        Console.WriteLine(MyChampionship[j].Team.FootballTeamName);
+                    }
                 }
                 //--------Optimizaciis Shedegad Qulebis, Gundebisa Da Mat Mier Dakavebuli Adgilebis Bazashi Chawera----------
-                for (int i = 0; i < Championships.Count; i++)//Am Moqmedebis Shedegad Ki Xdeba, Gundebis,Mat Mier Dakavebuli
-                                                             //Adgilebisa Da Qulebis Bazashi, Championship Cxrilshi, Chawera Sworad Da Dalagebulad!
+                for (int i = 0; i <Championships.Count; i++)
                 {
-                    db.Championship.Add(new Championship()
+                    db.Ranks.Add(new Ranks()
                     {
-                        ChampionshipPoints = Championships[i].ChampionshipPoints,
-                        FootballTeamName = Championships[i].FootballTeamName,
-                        Place = i + 1
-                    });
-                }
-                db.SaveChanges();//Vamaxsovrebt Cvlilebebs               
-                Console.WriteLine("Bazashi Chaiwera Titoeuli Gundis Mier Mopovebuli Qula Da Turnirze Dakavebuli Adgili!");
+                        Team = Championships[i].Team,
+                        Place = i + 1,
+                        ChampionshipPoints = Championships[i].ChampionshipPoints
+                    }) ;
+                    db.SaveChanges();//Bazashi Damaxsovreba
+                }                             
+                Console.WriteLine("Bazashi Chaiwera Titoeuli Gundis Mier Mopovebuli Qula Da Turnirze Dakavebuli Adgili!");          
             }
         }
-    }
-    public class FootballChampionship : DbContext
-    {
-        public DbSet<FootballTeam> FootballTeam { get; set; }
-        public DbSet<ChampionshipFixtureResults> ChampionshipFixtureResults { get; set; }
-        public DbSet<Championship> Championship { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public class FootballChampionship8 : DbContext
         {
-            optionsBuilder.UseSqlServer("server=DESKTOP-UNEAH8K;database=FootballChampionship;integrated security=true;");
+            public DbSet<FootballTeams> FootballTeams { get; set; }
+            public DbSet<Matches> Matches { get; set; }
+            public DbSet<Ranks> Ranks { get; set; }
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder.UseSqlServer("server=DESKTOP-UNEAH8K;database=FootballChampionship8;integrated security=true;");
+            }
         }
-    }
-    public class FootballTeam
-    {
-        [Key]
-        public int FootballTeamId { get; set; }
-        public string FootballTeamName { get; set; }
-    }
-    public class ChampionshipFixtureResults
-    {
-        [Key]
-        public int ChampionshipFixtureResultId { get; set; }
-        public string FootballTeam1 { get; set; }
-        public int GoalsScoredByFirstTeam { get; set; }
-        public string FootballTeam2 { get; set; }
-        public int GoalsScoredBySecondTeam { get; set; }
-    }
-    public class Championship
-    {
-        [Key]
-        public int ChampionshipRankId { get; set; }
-        public string FootballTeamName { get; set; }
-        public int Place { get; set; }
-        public int ChampionshipPoints { get; set; }
+        public class FootballTeams
+        {
+            public int FootballTeamsId { get; set; }
+            public string FootballTeamName { get; set; }
+        }
+        public class Matches
+        {
+            public int MatchesId { get; set; }
+            public virtual FootballTeams FirstTeam { get; set; }
+            public int GoalsScoredByFirstTeam { get; set; }
+            public virtual FootballTeams SecondTeam { get; set; }
+            public int GoalsScoredBySecondTeam { get; set; }
+        }
+        public class Ranks
+        {
+            public int RanksId { get; set; }
+            public virtual FootballTeams Team { get; set; }
+            public int Place { get; set; }
+            public int ChampionshipPoints { get; set; }
+        }
     }
 }
